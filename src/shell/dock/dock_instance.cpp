@@ -194,8 +194,8 @@ namespace shell::dock {
     // Shadow follows the same shape as the background
     if (instance.shadow != nullptr) {
       const auto shadowOff = shadowDirectionOffset(shadowConfig.direction);
-      const float shadowOffsetX = static_cast<float>(shadowOff.x);
-      const float shadowOffsetY = static_cast<float>(shadowOff.y);
+      const auto shadowOffsetX = static_cast<float>(shadowOff.x);
+      const auto shadowOffsetY = static_cast<float>(shadowOff.y);
       const RoundedRectStyle shadowStyle = shell::surface_shadow::style(
           shadowConfig, cfg.backgroundOpacity,
           shell::surface_shadow::Shape{
