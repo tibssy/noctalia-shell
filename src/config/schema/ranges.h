@@ -36,7 +36,7 @@ namespace noctalia::config::schema {
   inline constexpr Range<std::int64_t> kDockItemSpacingRange{0, 100, 1};
   inline constexpr Range<std::int64_t> kDockMarginEndsRange{0, 500, 1};
   inline constexpr Range<std::int64_t> kDockMarginEdgeRange{0, 100, 1};
-  inline constexpr Range<std::int64_t> kDockRadiusRange{-80, 80, 1}; // radius + each corner
+  inline constexpr Range<std::int64_t> kDockRadiusRange{0, 80, 1}; // radius + each corner
   inline constexpr Range<float> kDockActiveScaleRange{0.1f, 1.75f, 0.05f};
   inline constexpr Range<float> kDockInactiveScaleRange{0.1f, 1.0f, 0.05f};
   inline constexpr Range<float> kDockMagnificationScaleRange{1.0f, 2.0f, 0.05f};

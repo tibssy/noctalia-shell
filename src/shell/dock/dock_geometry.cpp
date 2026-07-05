@@ -23,41 +23,46 @@ namespace shell::dock {
   } // namespace
 
   DockConcaveShape dockConcaveShape(const DockConfig& cfg) {
-    const auto shapeFor = [](std::int32_t v) { return v < 0 ? CornerShape::Concave : CornerShape::Convex; };
-    const auto mag = [](std::int32_t v) { return static_cast<float>(v < 0 ? -v : v); };
-
     DockConcaveShape g;
-    g.corners = CornerShapes{
-        .tl = shapeFor(cfg.radiusTopLeft),
-        .tr = shapeFor(cfg.radiusTopRight),
-        .br = shapeFor(cfg.radiusBottomRight),
-        .bl = shapeFor(cfg.radiusBottomLeft),
+    g.radii = Radii{
+        static_cast<float>(cfg.radiusTopLeft),
+        static_cast<float>(cfg.radiusTopRight),
+        static_cast<float>(cfg.radiusBottomRight),
+        static_cast<float>(cfg.radiusBottomLeft),
     };
-    g.radii =
-        Radii{mag(cfg.radiusTopLeft), mag(cfg.radiusTopRight), mag(cfg.radiusBottomRight), mag(cfg.radiusBottomLeft)};
 
-    const auto negMag = [&](std::int32_t v) { return v < 0 ? mag(v) : 0.0f; };
+    if (!cfg.concaveEdgeCorners || cfg.marginEdge > 0) {
+      return g;
+    }
+
     const float cap = static_cast<float>(dockThickness(cfg)) * 0.5f;
     const auto capped = [&](float v) { return std::min(cap, v); };
 
-    // Map concave insets to the two side edges for the current dock position.
-    // For a bottom dock, negative bottom-left/right carve inward on left/right.
+    // Carve concavity only on corners facing the screen edge.
     switch (cfg.position) {
     case DockEdge::Bottom:
-      g.logicalInset.left = capped(negMag(cfg.radiusBottomLeft));
-      g.logicalInset.right = capped(negMag(cfg.radiusBottomRight));
+      g.corners.bl = CornerShape::Concave;
+      g.corners.br = CornerShape::Concave;
+      g.logicalInset.left = capped(g.radii.bl);
+      g.logicalInset.right = capped(g.radii.br);
       break;
     case DockEdge::Top:
-      g.logicalInset.left = capped(negMag(cfg.radiusTopLeft));
-      g.logicalInset.right = capped(negMag(cfg.radiusTopRight));
+      g.corners.tl = CornerShape::Concave;
+      g.corners.tr = CornerShape::Concave;
+      g.logicalInset.left = capped(g.radii.tl);
+      g.logicalInset.right = capped(g.radii.tr);
       break;
     case DockEdge::Left:
-      g.logicalInset.top = capped(negMag(cfg.radiusTopLeft));
-      g.logicalInset.bottom = capped(negMag(cfg.radiusBottomLeft));
+      g.corners.tl = CornerShape::Concave;
+      g.corners.bl = CornerShape::Concave;
+      g.logicalInset.top = capped(g.radii.tl);
+      g.logicalInset.bottom = capped(g.radii.bl);
       break;
     case DockEdge::Right:
-      g.logicalInset.top = capped(negMag(cfg.radiusTopRight));
-      g.logicalInset.bottom = capped(negMag(cfg.radiusBottomRight));
+      g.corners.tr = CornerShape::Concave;
+      g.corners.br = CornerShape::Concave;
+      g.logicalInset.top = capped(g.radii.tr);
+      g.logicalInset.bottom = capped(g.radii.br);
       break;
     }
     return g;

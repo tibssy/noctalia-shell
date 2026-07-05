@@ -1709,20 +1709,24 @@
         "background-opacity": {
           "description": "Background opacity of the dock"
         },
+        "concave-edge-corners": {
+          "description": "Carve inward corners on the side that touches the screen edge",
+          "label": "Concave Edge Corners"
+        },
         "corner-bottom-left": {
-          "description": "Bottom left corner radius for the dock; negative values carve a concave corner when this corner faces the screen edge"
+          "description": "Bottom left corner radius for the dock"
         },
         "corner-bottom-right": {
-          "description": "Bottom right corner radius for the dock; negative values carve a concave corner when this corner faces the screen edge"
+          "description": "Bottom right corner radius for the dock"
         },
         "corner-radius": {
-          "description": "Corner radius of the dock; negative values carve a concave corner when this corner faces the screen edge"
+          "description": "Corner radius of the dock"
         },
         "corner-top-left": {
-          "description": "Top left corner radius for the dock; negative values carve a concave corner when this corner faces the screen edge"
+          "description": "Top left corner radius for the dock"
         },
         "corner-top-right": {
-          "description": "Top right corner radius for the dock; negative values carve a concave corner when this corner faces the screen edge"
+          "description": "Top right corner radius for the dock"
         },
         "cross-axis-padding": {
           "description": "Inner padding along the dock's cross axis (between icons and the screen edge)"
