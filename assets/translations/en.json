@@ -1710,19 +1710,19 @@
           "description": "Background opacity of the dock"
         },
         "corner-bottom-left": {
-          "description": "Bottom left corner radius for the dock; negative values carve a concave corner"
+          "description": "Bottom left corner radius for the dock; negative values carve a concave corner when this corner faces the screen edge"
         },
         "corner-bottom-right": {
-          "description": "Bottom right corner radius for the dock; negative values carve a concave corner"
+          "description": "Bottom right corner radius for the dock; negative values carve a concave corner when this corner faces the screen edge"
         },
         "corner-radius": {
-          "description": "Corner radius of the dock; negative values carve a concave corner"
+          "description": "Corner radius of the dock; negative values carve a concave corner when this corner faces the screen edge"
         },
         "corner-top-left": {
-          "description": "Top left corner radius for the dock; negative values carve a concave corner"
+          "description": "Top left corner radius for the dock; negative values carve a concave corner when this corner faces the screen edge"
         },
         "corner-top-right": {
-          "description": "Top right corner radius for the dock; negative values carve a concave corner"
+          "description": "Top right corner radius for the dock; negative values carve a concave corner when this corner faces the screen edge"
         },
         "cross-axis-padding": {
           "description": "Inner padding along the dock's cross axis (between icons and the screen edge)"

@@ -125,6 +125,11 @@ namespace shell::dock {
     const DockEdge edge = cfg.position;
     const bool vertical = isVerticalEdge(edge);
     const auto sb = shell::surface_shadow::bleed(cfg.shadow, shadow);
+    const auto concave = dockConcaveShape(cfg);
+    const int insetL = static_cast<int>(std::ceil(std::max(0.0f, concave.logicalInset.left)));
+    const int insetT = static_cast<int>(std::ceil(std::max(0.0f, concave.logicalInset.top)));
+    const int insetR = static_cast<int>(std::ceil(std::max(0.0f, concave.logicalInset.right)));
+    const int insetB = static_cast<int>(std::ceil(std::max(0.0f, concave.logicalInset.bottom)));
     const auto panelW = dockContentSize(cfg, itemCount);
     const auto panelH = dockThickness(cfg);
     const std::int32_t zoomPad = dockHoverZoomCrossPad(cfg);
@@ -135,7 +140,7 @@ namespace shell::dock {
 
     DockSurfaceGeometry geometry;
     if (!vertical) {
-      geometry.surfaceW = static_cast<std::uint32_t>(panelW + sb.left + sb.right);
+      geometry.surfaceW = static_cast<std::uint32_t>(panelW + sb.left + sb.right + insetL + insetR);
       geometry.marginLeft = cfg.marginEnds;
       geometry.marginRight = cfg.marginEnds;
       if (isBottom) {
@@ -160,7 +165,7 @@ namespace shell::dock {
 
     geometry.marginTop = cfg.marginEnds;
     geometry.marginBottom = cfg.marginEnds;
-    geometry.surfaceH = static_cast<std::uint32_t>(panelW + sb.up + sb.down);
+    geometry.surfaceH = static_cast<std::uint32_t>(panelW + sb.up + sb.down + insetT + insetB);
     if (isRight) {
       if (edgeGutter > 0) {
         geometry.surfaceW = static_cast<std::uint32_t>(sb.left + panelH + edgeGutter + zoomPad);
@@ -205,6 +210,11 @@ namespace shell::dock {
     const DockEdge edge = cfg.position;
     const bool vertical = isVerticalEdge(edge);
     const auto sb = shell::surface_shadow::bleed(cfg.shadow, shadow);
+    const auto concave = dockConcaveShape(cfg);
+    const float insetL = std::ceil(std::max(0.0f, concave.logicalInset.left));
+    const float insetT = std::ceil(std::max(0.0f, concave.logicalInset.top));
+    const float insetR = std::ceil(std::max(0.0f, concave.logicalInset.right));
+    const float insetB = std::ceil(std::max(0.0f, concave.logicalInset.bottom));
     const auto bleedL = static_cast<float>(sb.left);
     const auto bleedR = static_cast<float>(sb.right);
     const auto bleedU = static_cast<float>(sb.up);
@@ -224,9 +234,9 @@ namespace shell::dock {
         }
       }
       return DockPanelGeometry{
-          .panelX = bleedL,
+          .panelX = bleedL + insetL,
           .panelY = y,
-          .panelW = surfaceW - bleedL - bleedR,
+          .panelW = surfaceW - bleedL - bleedR - insetL - insetR,
           .panelH = panelThickness,
       };
     }
@@ -241,9 +251,9 @@ namespace shell::dock {
     }
     return DockPanelGeometry{
         .panelX = x,
-        .panelY = bleedU,
+        .panelY = bleedU + insetT,
         .panelW = panelThickness,
-        .panelH = surfaceH - bleedU - bleedD,
+        .panelH = surfaceH - bleedU - bleedD - insetT - insetB,
     };
   }
 
