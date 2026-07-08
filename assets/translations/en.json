@@ -1541,7 +1541,7 @@
           "description": "Bottom right corner radius for the bar"
         },
         "concave-edge-corners": {
-          "description": "Carve inward corners on the bar edge that touches the screen; requires Edge Margin to be 0",
+          "description": "Carve concave (inward-curving) corners into the bar; requires Edge Margin to be 0. With Ends Margin at 0 the inner corners are carved, otherwise the corners meeting the screen edge",
           "label": "Concave Edge Corners"
         },
         "corner-radius": {
@@ -1722,7 +1722,7 @@
           "description": "Background opacity of the dock"
         },
         "concave-edge-corners": {
-          "description": "Carve inward corners on the side that touches the screen edge; requires the margin to the screen edge to be 0",
+          "description": "Carve concave (inward-curving) corners into the bar; requires Edge Margin to be 0. With Ends Margin at 0 the inner corners are carved, otherwise the corners meeting the screen edge",
           "label": "Concave Edge Corners"
         },
         "corner-bottom-left": {
