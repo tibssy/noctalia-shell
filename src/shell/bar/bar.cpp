@@ -616,8 +616,7 @@ namespace {
     std::int32_t exclusiveZone = 0;
   };
 
-  [[nodiscard]] BarSurfaceSpec
-  computeBarSurfaceSpec(
+  [[nodiscard]] BarSurfaceSpec computeBarSurfaceSpec(
       const BarConfig& barConfig, const ShellConfig::ShadowConfig& shadowConfig, std::int32_t desktopCornerSize
   ) {
     const bool vertical = (barConfig.position == "left" || barConfig.position == "right");
@@ -752,8 +751,8 @@ namespace {
   }
 
   BarVisualGeometry computeBarVisualGeometry(
-      const BarConfig& cfg, const ShellConfig::ShadowConfig& shadow, std::int32_t desktopCornerSize,
-      float surfaceWidth, float surfaceHeight, float innerSurfaceExtension = 0.0f
+      const BarConfig& cfg, const ShellConfig::ShadowConfig& shadow, std::int32_t desktopCornerSize, float surfaceWidth,
+      float surfaceHeight, float innerSurfaceExtension = 0.0f
   ) {
     const auto barThickness = static_cast<float>(cfg.thickness);
     const auto marginEnds = static_cast<float>(cfg.marginEnds);
@@ -821,8 +820,7 @@ namespace {
     };
   }
 
-  [[nodiscard]] InputRect
-  barContentInputRegion(
+  [[nodiscard]] InputRect barContentInputRegion(
       const BarConfig& cfg, const ShellConfig::ShadowConfig& shadow, std::int32_t desktopCornerSize, int surfW,
       int surfH
   ) {
@@ -865,10 +863,9 @@ namespace {
     const auto concave = barConcaveShape(instance.barConfig, desktopCornerSize);
     const float innerSurfaceExtension =
         barInnerSurfaceExtension(instance.barConfig, shadowConfig, desktopCornerSize, surfaceWidth, surfaceHeight);
-    const auto barVisual =
-        computeBarVisualGeometry(
-            instance.barConfig, shadowConfig, desktopCornerSize, surfaceWidth, surfaceHeight, innerSurfaceExtension
-        );
+    const auto barVisual = computeBarVisualGeometry(
+        instance.barConfig, shadowConfig, desktopCornerSize, surfaceWidth, surfaceHeight, innerSurfaceExtension
+    );
     // Shadow follows the same shape as the background: the body expanded outward by
     // the concave inset into the visual rect, so concave spikes cast a matching shadow.
     const float barAreaW = barVisual.width + concave.logicalInset.left + concave.logicalInset.right;
@@ -2614,12 +2611,9 @@ void Bar::syncBarAutoHideInputRegion(BarInstance& instance) const {
     instance.surface->setInputRegion(barAutoHideSurfaceInputRegion(instance.barConfig, surfW, surfH, fullSurface));
     return;
   }
-  instance.surface->setInputRegion(
-      {barContentInputRegion(
-          instance.barConfig, m_config->config().shell.shadow, m_config->config().shell.screenCorners.size, surfW,
-          surfH
-      )}
-  );
+  instance.surface->setInputRegion({barContentInputRegion(
+      instance.barConfig, m_config->config().shell.shadow, m_config->config().shell.screenCorners.size, surfW, surfH
+  )});
 }
 
 void Bar::revealAutoHideBar(BarInstance& instance) {
@@ -2698,15 +2692,21 @@ void Bar::applyBarCompositorBlur(BarInstance& instance) const {
   const int pw = static_cast<int>(std::lround(std::max(0.0f, instance.bg->width())));
   const int ph = static_cast<int>(std::lround(std::max(0.0f, instance.bg->height())));
   const auto concave = barConcaveShape(instance.barConfig, m_config->config().shell.screenCorners.size);
-  const bool anyConcave = concave.corners.tl == CornerShape::Concave || concave.corners.tr == CornerShape::Concave
-      || concave.corners.br == CornerShape::Concave || concave.corners.bl == CornerShape::Concave;
-  const bool anyInset = concave.logicalInset.left > 0.0f || concave.logicalInset.top > 0.0f
-      || concave.logicalInset.right > 0.0f || concave.logicalInset.bottom > 0.0f;
+  const bool anyConcave = concave.corners.tl == CornerShape::Concave
+      || concave.corners.tr == CornerShape::Concave
+      || concave.corners.br == CornerShape::Concave
+      || concave.corners.bl == CornerShape::Concave;
+  const bool anyInset = concave.logicalInset.left > 0.0f
+      || concave.logicalInset.top > 0.0f
+      || concave.logicalInset.right > 0.0f
+      || concave.logicalInset.bottom > 0.0f;
 
   // Fast-path: the common all-convex/no-inset case is a plain rounded rect.
   if (!anyConcave && !anyInset) {
     instance.surface->setBlurRegion(
-        Surface::tessellateRoundedRect(px, py, pw, ph, concave.radii.tl, concave.radii.tr, concave.radii.br, concave.radii.bl)
+        Surface::tessellateRoundedRect(
+            px, py, pw, ph, concave.radii.tl, concave.radii.tr, concave.radii.br, concave.radii.bl
+        )
     );
     return;
   }
@@ -2966,9 +2966,8 @@ void Bar::updateWidgets(BarInstance& instance) {
   const auto desktopCornerSize = m_config->config().shell.screenCorners.size;
   const float innerSurfaceExtension =
       barInnerSurfaceExtension(instance.barConfig, shadowConfig, desktopCornerSize, w, h);
-  const auto barVisual = computeBarVisualGeometry(
-      instance.barConfig, shadowConfig, desktopCornerSize, w, h, innerSurfaceExtension
-  );
+  const auto barVisual =
+      computeBarVisualGeometry(instance.barConfig, shadowConfig, desktopCornerSize, w, h, innerSurfaceExtension);
   const float barAreaW = barVisual.width;
   const float barAreaH = barVisual.height;
 
@@ -3013,9 +3012,8 @@ void Bar::prepareFrame(BarInstance& instance, bool needsUpdate, bool needsLayout
   const auto desktopCornerSize = m_config->config().shell.screenCorners.size;
   const float innerSurfaceExtension =
       barInnerSurfaceExtension(instance.barConfig, shadowConfig, desktopCornerSize, w, h);
-  const auto barVisual = computeBarVisualGeometry(
-      instance.barConfig, shadowConfig, desktopCornerSize, w, h, innerSurfaceExtension
-  );
+  const auto barVisual =
+      computeBarVisualGeometry(instance.barConfig, shadowConfig, desktopCornerSize, w, h, innerSurfaceExtension);
   const float barAreaW = barVisual.width;
   const float barAreaH = barVisual.height;
 
