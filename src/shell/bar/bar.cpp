@@ -77,12 +77,13 @@ namespace {
     return cfg.marginEdge;
   }
 
-  // Concave bar shape modes:
-  // - Inner-edge mode (legacy bar behavior): enabled when concave_edge_corners is on
-  //   and both margin_edge and margin_ends are zero.
-  // - Screen-edge mode (dock-like): enabled when concave_edge_corners is on,
-  //   margin_edge is zero, and margin_ends exceeds the edge-facing corner radius
-  //   plus desktop screen-corner size.
+  // concave_edge_corners carves concave corners on one of the bar's two long
+  // edges, chosen by the margin configuration (both require margin_edge == 0):
+  // - Inner-edge: full-length bar (margin_ends == 0). Carves the corners on the
+  //   edge facing away from the screen.
+  // - Screen-edge: bar inset from its ends (margin_ends exceeds the edge-facing
+  //   corner radius plus the screen-corner size). Carves the corners on the edge
+  //   touching the screen.
   struct BarConcaveShape {
     CornerShapes corners{};
     Radii radii;
@@ -110,7 +111,7 @@ namespace {
 
     const BarConcaveCorners inner = barInnerEdgeCorners(cfg.position);
 
-    // Mode A: margin_edge == 0 && margin_ends == 0 -> legacy inner-edge concavity.
+    // Inner-edge concavity: full-length bar carves the corners on the inner edge.
     if (cfg.marginEnds == 0) {
       g.corners = CornerShapes{
           .tl = inner.topLeft ? CornerShape::Concave : CornerShape::Convex,
@@ -147,7 +148,7 @@ namespace {
       return g;
     }
 
-    // Mode B: dock-like concavity on screen-edge corners.
+    // Screen-edge concavity: inset bar carves the corners touching the screen edge.
     const std::int32_t desktopCorner = std::max<std::int32_t>(0, desktopCornerSize);
     std::int32_t edgeThreshold = 0;
     const std::string_view pos = cfg.position;
