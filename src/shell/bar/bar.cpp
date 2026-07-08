@@ -2698,9 +2698,21 @@ void Bar::applyBarCompositorBlur(BarInstance& instance) const {
   const int pw = static_cast<int>(std::lround(std::max(0.0f, instance.bg->width())));
   const int ph = static_cast<int>(std::lround(std::max(0.0f, instance.bg->height())));
   const auto concave = barConcaveShape(instance.barConfig, m_config->config().shell.screenCorners.size);
+  const bool anyConcave = concave.corners.tl == CornerShape::Concave || concave.corners.tr == CornerShape::Concave
+      || concave.corners.br == CornerShape::Concave || concave.corners.bl == CornerShape::Concave;
+  const bool anyInset = concave.logicalInset.left > 0.0f || concave.logicalInset.top > 0.0f
+      || concave.logicalInset.right > 0.0f || concave.logicalInset.bottom > 0.0f;
+
+  // Fast-path: the common all-convex/no-inset case is a plain rounded rect.
+  if (!anyConcave && !anyInset) {
+    instance.surface->setBlurRegion(
+        Surface::tessellateRoundedRect(px, py, pw, ph, concave.radii.tl, concave.radii.tr, concave.radii.br, concave.radii.bl)
+    );
+    return;
+  }
+
   // The bg node is the visual rect; tessellateShape expects the body rect and
-  // expands it outward by logicalInset itself. With all-convex corners this is the
-  // plain rounded rect.
+  // expands it outward by logicalInset itself.
   const int insetL = static_cast<int>(std::lround(concave.logicalInset.left));
   const int insetT = static_cast<int>(std::lround(concave.logicalInset.top));
   const int insetR = static_cast<int>(std::lround(concave.logicalInset.right));
