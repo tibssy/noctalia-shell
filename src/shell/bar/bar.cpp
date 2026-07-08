@@ -627,16 +627,21 @@ namespace {
     const std::int32_t mEdge = barConfig.marginEdge;
     const auto sb = shell::surface_shadow::bleed(barConfig.shadow, shadowConfig);
     const int edgeGutter = barAutoHideEdgeGutter(barConfig);
+    const auto concave = barConcaveShape(barConfig, desktopCornerSize);
+    const int insetL = static_cast<int>(std::ceil(std::max(0.0f, concave.logicalInset.left)));
+    const int insetT = static_cast<int>(std::ceil(std::max(0.0f, concave.logicalInset.top)));
+    const int insetR = static_cast<int>(std::ceil(std::max(0.0f, concave.logicalInset.right)));
+    const int insetB = static_cast<int>(std::ceil(std::max(0.0f, concave.logicalInset.bottom)));
     // Reserve room for a concave-corner spike on the inner edge (opaque bar material),
     // in addition to the shadow bleed that renders beyond the spike tips.
-    const int concaveBulge = static_cast<int>(std::lround(barConcaveShape(barConfig, desktopCornerSize).innerBulge));
+    const int concaveBulge = static_cast<int>(std::lround(concave.innerBulge));
 
     const std::int32_t edgeMargin = barEdgeLayerMargin(barConfig, shadowConfig);
 
     BarSurfaceSpec spec;
     if (!vertical) {
-      spec.marginLeft = std::max(0, mEnds - sb.left);
-      spec.marginRight = std::max(0, mEnds - sb.right);
+      spec.marginLeft = std::max(0, mEnds - sb.left - insetL);
+      spec.marginRight = std::max(0, mEnds - sb.right - insetR);
       if (isBottom) {
         if (edgeGutter > 0) {
           // Surface reaches the screen edge (no layer margin); the margin is folded
@@ -658,8 +663,8 @@ namespace {
         }
       }
     } else {
-      spec.marginTop = std::max(0, mEnds - sb.up);
-      spec.marginBottom = std::max(0, mEnds - sb.down);
+      spec.marginTop = std::max(0, mEnds - sb.up - insetT);
+      spec.marginBottom = std::max(0, mEnds - sb.down - insetB);
       if (isRight) {
         if (edgeGutter > 0) {
           spec.surfaceWidth = static_cast<std::uint32_t>(sb.left + concaveBulge + barConfig.thickness + edgeGutter);
@@ -757,6 +762,11 @@ namespace {
     const bool isRight = cfg.position == "right";
     const bool isVertical = (cfg.position == "left" || cfg.position == "right");
     const auto sbi = shell::surface_shadow::bleed(cfg.shadow, shadow);
+    const auto concave = barConcaveShape(cfg, desktopCornerSize);
+    const float insetL = std::ceil(std::max(0.0f, concave.logicalInset.left));
+    const float insetT = std::ceil(std::max(0.0f, concave.logicalInset.top));
+    const float insetR = std::ceil(std::max(0.0f, concave.logicalInset.right));
+    const float insetB = std::ceil(std::max(0.0f, concave.logicalInset.bottom));
     const auto bleedLeft = static_cast<float>(sbi.left);
     const auto bleedRight = static_cast<float>(sbi.right);
     const auto bleedUp = static_cast<float>(sbi.up);
@@ -765,11 +775,11 @@ namespace {
     // pushes the body inward by its bulge. Top/left bars grow away from the origin
     // and need no body shift. Gutter (auto-hide) placements derive from the surface
     // size, which already includes the bulge, so they shift automatically.
-    const float concaveBulge = barConcaveShape(cfg, desktopCornerSize).innerBulge;
+    const float concaveBulge = concave.innerBulge;
 
     if (isVertical) {
       // Vertical bar: edge gap is left/right, ends inset is top/bottom.
-      const float y = std::min(marginEnds, bleedUp);
+      const float y = std::min(marginEnds, bleedUp) + insetT;
       float x = isRight ? (bleedLeft + concaveBulge) : std::min(marginEdge, bleedLeft);
       if (const int gutter = barAutoHideEdgeGutter(cfg); gutter > 0) {
         // The gutter equals marginEdge and sits between the screen edge and the bar.
@@ -787,12 +797,12 @@ namespace {
           .x = x,
           .y = y,
           .width = barThickness,
-          .height = surfaceHeight - y - std::min(marginEnds, bleedDown),
+          .height = surfaceHeight - y - std::min(marginEnds, bleedDown) - insetB,
       };
     }
 
     // Horizontal bar: edge gap is top/bottom, ends inset is left/right.
-    const float x = std::min(marginEnds, bleedLeft);
+    const float x = std::min(marginEnds, bleedLeft) + insetL;
     float y = isBottom ? (bleedUp + concaveBulge) : std::min(marginEdge, bleedUp);
     if (const int gutter = barAutoHideEdgeGutter(cfg); gutter > 0) {
       if (isBottom) {
@@ -806,7 +816,7 @@ namespace {
     return {
         .x = x,
         .y = y,
-        .width = surfaceWidth - x - std::min(marginEnds, bleedRight),
+        .width = surfaceWidth - x - std::min(marginEnds, bleedRight) - insetR,
         .height = barThickness,
     };
   }
